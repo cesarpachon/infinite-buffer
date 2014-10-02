@@ -18,7 +18,7 @@ module.exports = function(grunt) {
           timeout : 10000
         }
       }
-    }
+    },
     jshint: {
       options:{
         jshintrc:true
