@@ -1,0 +1,31 @@
+{
+  "name": "infinite-buffer",
+  "version": "0.0.0",
+  "description": "test of concept for async paginated ring buffer",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cesarpachon/infinite-buffer.git"
+  },
+  "keywords": [
+    "ring",
+    "buffer"
+  ],
+  "author": "cesarpachon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cesarpachon/infinite-buffer/issues"
+  },
+  "homepage": "https://github.com/cesarpachon/infinite-buffer",
+
+   "devDependencies": {
+  	"grunt": "0.4.2",
+	  "grunt-contrib-watch": "~0.2.0",
+	  "grunt-contrib-jasmine": "~0.4.2",
+	  "grunt-contrib-jshint": "^0.10.0"
+  }
+
+}
