@@ -126,9 +126,9 @@ var InfiniteBuffer = (function(){
 
 
   /**
-  * prepare the buffer for reverse iteration
+  *
   */
-  InfiniteBuffer.prototype.moveToEnd = function(){
+  InfiniteBuffer.prototype.reset = function(){
     this.local_index = -1; //this.global_size % this.max_page_size;
     this.page = -1; //Math.floor(this.global_size / this.max_page_size);
   };

@@ -79,7 +79,7 @@ var ibuffer = null;
       sum = 0;
       count = 0;
       ctrl = 0;
-      ibuffer.moveToEnd();
+      ibuffer.reset();
       while(ibuffer.hasGlobalPrev()){
         ctrl++;
         if(ctrl > 2*MAX_GLOBAL_SIZE){
