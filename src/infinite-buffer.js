@@ -17,7 +17,7 @@ var InfiniteBuffer = (function(){
    this.max_page_size = max_page_size;
    this.slots = new Array(this.max_page_size);
    //usually will be equals to slots.length (max_page_size) but sometimes it may be less (i.e, at the end of the global buffer)
-   this.slots_lenght = 0;
+   this.slots_length = 0;
    this.provider = provider;
    //position of the local buffer related to the global buffer
    this.page = -1;
@@ -50,7 +50,6 @@ var InfiniteBuffer = (function(){
     if(this._globalIndexAvailable(this._localToGlobalIndex(this.local_index+1))){
       this.local_index++;
       console.log("next true. local_index ", this.local_index, this._localToGlobalIndex(this.local_index));
-
       return true;
     }
     else{
@@ -97,11 +96,10 @@ var InfiniteBuffer = (function(){
     var offset = (this.page)*this.max_page_size;
     var self = this;
     this.provider(offset, this.max_page_size, function(data){
-      self.slot_length = Math.min(data.length, self.max_page_size);
-      for(var i=0; i<self.slot_length; ++i){
+      self.slots_length = Math.min(data.length, self.max_page_size);
+      for(var i=0; i<self.slots_length; ++i){
         self.slots[i] = data[i];
       }
-      console.log(self.slots);
       self.waiting_for_data = false;
       self.local_index = -1;
     });
