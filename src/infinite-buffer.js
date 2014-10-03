@@ -35,6 +35,16 @@ var InfiniteBuffer = (function(){
       (this._localToGlobalIndex(this.local_index + 1) < this.global_size);
   };
 
+  /**
+  * return true if there is more data in the global (remote) buffer,
+  * it does not matter if the data is out of range of the local array
+  */
+  InfiniteBuffer.prototype.hasGlobalPrev = function(){
+    if(this.local_index == -1)
+      return true;
+    else
+      return this._localToGlobalIndex(this.local_index - 1) >= 0;
+  };
 
   /**
   * try to advance the local index.
@@ -54,10 +64,57 @@ var InfiniteBuffer = (function(){
     }
     else{
       this.page++;
-      this._retrievePage();
+      this._retrievePage(false);
       return false;
     }
   };
+
+
+  /**
+  * try to decrease the local index.
+  * return true if the data is available for retrieval with the val method.
+  * return false means that it is waiting for retrieval of remote data from the provider.
+  */
+  InfiniteBuffer.prototype.prev = function(){
+
+    if(this.waiting_for_data) {
+      return false;
+    }
+
+
+    if(this.local_index == -1 && this.page == -1){
+      this.page = Math.floor(this.global_size / this.max_page_size);
+      this._retrievePage(true);
+      return false;
+    }
+
+
+    if(this._globalIndexAvailable(this._localToGlobalIndex(this.local_index-1))){
+      if(this.local_index == 0){
+        this.local_index = this.max_page_size;
+        this.page--;
+       console.log("prev true. local_index ", this.local_index, this._localToGlobalIndex(this.local_index), "changing page", this.page);
+        this._retrievePage(true);
+        return false;
+      }else{
+        this.local_index--;
+      }
+      console.log("prev true. local_index ", this.local_index, this._localToGlobalIndex(this.local_index), "page", this.page);
+      return true;
+    }
+    else{
+
+      //if(this.page < 0){
+      //  this.page = Math.floor(this.global_size / this.max_page_size);
+      //}
+
+      this.page--;
+      this._retrievePage(true);
+      return false;
+    }
+  };
+
+
 
 
   /**
@@ -65,6 +122,15 @@ var InfiniteBuffer = (function(){
   */
   InfiniteBuffer.prototype.val = function(){
     return this.slots[this.local_index];
+  };
+
+
+  /**
+  * prepare the buffer for reverse iteration
+  */
+  InfiniteBuffer.prototype.moveToEnd = function(){
+    this.local_index = -1; //this.global_size % this.max_page_size;
+    this.page = -1; //Math.floor(this.global_size / this.max_page_size);
   };
 
 
@@ -82,16 +148,17 @@ var InfiniteBuffer = (function(){
   InfiniteBuffer.prototype._globalIndexAvailable = function(gi){
     if(gi < 0) return false;
     var offset = this.page*this.max_page_size;
-    return gi >= offset && gi < offset + this.max_page_size;
+    return gi >= offset && gi < Math.min(offset + this.max_page_size, this.global_size);
   };
 
 
 
 
   /**
-  *
+  * if moveToEnd is true, local_index will be moved to the lenght of returned data.
+  * else, it will be set to -1
   */
-  InfiniteBuffer.prototype._retrievePage = function(){
+  InfiniteBuffer.prototype._retrievePage = function(moveToEnd){
     this.waiting_for_data = true;
     var offset = (this.page)*this.max_page_size;
     var self = this;
@@ -101,7 +168,11 @@ var InfiniteBuffer = (function(){
         self.slots[i] = data[i];
       }
       self.waiting_for_data = false;
-      self.local_index = -1;
+      if(moveToEnd){
+        self.local_index = data.length;
+      }else{
+        self.local_index = -1;
+      }
     });
   };
 

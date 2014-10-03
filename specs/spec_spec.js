@@ -1,6 +1,6 @@
 describe("infinitebuffer", function(){
 
-var i, sum, count, ctrl;
+var i, sum, count, ctrl, numints;
 
 //this is the size of our large buffer
 var MAX_GLOBAL_SIZE = 1010; //we add 10 items to test a last page without full records
@@ -13,8 +13,8 @@ var MAX_PAGE_SIZE = 100;
 var provider = function(skip, max_page_size, cb){
   var max = Math.min(MAX_GLOBAL_SIZE, skip+max_page_size);
   data = [];
-  for(i=0; i<max; ++i){
-    data.push(skip+i);
+  for(i=skip; i<max; ++i){
+    data.push(i);
   }
   cb(data);
 };
@@ -69,13 +69,33 @@ var ibuffer = null;
         }
       }
 
-      var numints = MAX_GLOBAL_SIZE -1;
+      numints = MAX_GLOBAL_SIZE -1;
       expect(sum).toBe((numints*(numints+1))/2);
       expect(count).toBe(MAX_GLOBAL_SIZE);
     });
 
 
     it("should support backward iteration", function(){
+      sum = 0;
+      count = 0;
+      ctrl = 0;
+      ibuffer.moveToEnd();
+      while(ibuffer.hasGlobalPrev()){
+        ctrl++;
+        if(ctrl > 2*MAX_GLOBAL_SIZE){
+          throw "something went wrong with this test: infinite loop?";
+        }
+        if(ibuffer.prev()){
+          count++;
+          sum += ibuffer.val();
+        }else{
+          //waiting for remote data!
+        }
+      }
+
+      numints = MAX_GLOBAL_SIZE -1;
+      expect(sum).toBe((numints*(numints+1))/2);
+      expect(count).toBe(MAX_GLOBAL_SIZE);
 
     });
 
