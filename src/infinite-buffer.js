@@ -59,7 +59,6 @@ var InfiniteBuffer = (function(){
 
     if(this._globalIndexAvailable(this._localToGlobalIndex(this.local_index+1))){
       this.local_index++;
-      console.log("next true. local_index ", this.local_index, this._localToGlobalIndex(this.local_index));
       return true;
     }
     else{
@@ -81,33 +80,24 @@ var InfiniteBuffer = (function(){
       return false;
     }
 
-
     if(this.local_index == -1 && this.page == -1){
       this.page = Math.floor(this.global_size / this.max_page_size);
       this._retrievePage(true);
       return false;
     }
 
-
     if(this._globalIndexAvailable(this._localToGlobalIndex(this.local_index-1))){
       if(this.local_index == 0){
         this.local_index = this.max_page_size;
         this.page--;
-       console.log("prev true. local_index ", this.local_index, this._localToGlobalIndex(this.local_index), "changing page", this.page);
         this._retrievePage(true);
         return false;
       }else{
         this.local_index--;
       }
-      console.log("prev true. local_index ", this.local_index, this._localToGlobalIndex(this.local_index), "page", this.page);
       return true;
     }
     else{
-
-      //if(this.page < 0){
-      //  this.page = Math.floor(this.global_size / this.max_page_size);
-      //}
-
       this.page--;
       this._retrievePage(true);
       return false;
